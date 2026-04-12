@@ -1,0 +1,50 @@
+---
+- name: Check if VS Code is already installed
+  ansible.builtin.command: dpkg-query -W {{ vscode_package_name }}
+  register: vscode_installed
+  failed_when: false
+  changed_when: false
+
+- name: Ensure apt keyrings directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: true
+  when: vscode_installed.rc != 0
+
+- name: Download Microsoft GPG key for VS Code
+  ansible.builtin.get_url:
+    url: "{{ vscode_gpg_key_url }}"
+    dest: "{{ vscode_gpg_key_tmp }}"
+    mode: '0644'
+  when: vscode_installed.rc != 0
+
+- name: Convert key to apt keyring format
+  ansible.builtin.command: gpg --dearmor --yes --output {{ vscode_gpg_keyring }} {{ vscode_gpg_key_tmp }}
+  become: true
+  args:
+    creates: "{{ vscode_gpg_keyring }}"
+  when: vscode_installed.rc != 0
+
+- name: Add VS Code APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by={{ vscode_gpg_keyring }}] https://packages.microsoft.com/repos/vscode stable main"
+    filename: vscode
+    state: present
+  become: true
+  when: vscode_installed.rc != 0
+
+- name: Install Visual Studio Code
+  ansible.builtin.apt:
+    name: "{{ vscode_package_name }}"
+    state: present
+    update_cache: true
+  become: true
+  when: vscode_installed.rc != 0
+
+- name: Remove temporary GPG key file
+  ansible.builtin.file:
+    path: "{{ vscode_gpg_key_tmp }}"
+    state: absent
+  when: vscode_installed.rc != 0
