@@ -3,3 +3,15 @@ vscode_package_name: "code"
 vscode_gpg_key_url: "https://packages.microsoft.com/keys/microsoft.asc"
 vscode_gpg_key_tmp: "/tmp/microsoft.asc"
 vscode_gpg_keyring: "/etc/apt/keyrings/microsoft.gpg"
+vscode_user: "{{ ansible_user }}"
+
+vscode_extensions:
+  - shd101wyy.markdown-preview-enhanced
+  - ms-python.python
+  - ms-python.debugpy
+  - ms-azuretools.vscode-docker
+  - ms-vscode.cpptools
+  - ms-vscode.cpptools-extension-pack
+  - waderyan.gitblame
+  - donjayamanne.git-extension-pack
+  - jebbs.plantuml

@@ -48,3 +48,21 @@
     path: "{{ vscode_gpg_key_tmp }}"
     state: absent
   when: vscode_installed.rc != 0
+
+- name: List installed VS Code extensions
+  ansible.builtin.command: code --list-extensions
+  become: true
+  become_user: "{{ vscode_user }}"
+  register: vscode_installed_extensions
+  changed_when: false
+
+- name: Install VS Code extensions
+  ansible.builtin.command:
+    argv:
+      - code
+      - --install-extension
+      - "{{ item }}"
+  become: true
+  become_user: "{{ vscode_user }}"
+  loop: "{{ vscode_extensions | difference(vscode_installed_extensions.stdout_lines | map('lower') | list) }}"
+

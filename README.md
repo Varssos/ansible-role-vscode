@@ -15,6 +15,8 @@ Ansible role to install [Visual Studio Code](https://code.visualstudio.com/) on 
 | `vscode_gpg_key_url` | `https://packages.microsoft.com/keys/microsoft.asc` | URL to the Microsoft GPG key |
 | `vscode_gpg_key_tmp` | `/tmp/microsoft.asc` | Temporary path for the downloaded key |
 | `vscode_gpg_keyring` | `/etc/apt/keyrings/microsoft.gpg` | Path for the converted keyring file |
+| `vscode_user` | `{{ ansible_user }}` | User profile for VS Code extensions |
+| `vscode_extensions` | See defaults | Extensions to install |
 
 ## Example Playbook
 
